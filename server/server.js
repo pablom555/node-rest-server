@@ -4,31 +4,27 @@
 require('./config/config');
 
 const express = require('express');
+const mongoose = require('mongoose');
 const morgan = require('morgan')
 
 const app = express();
 
-app.use(morgan('dev'))
-app.use(express.json())
+app.use(morgan('dev'));
 
-app.get('/usuario', (req, res) => {
-  res.json("get usuario");
-})
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-app.post('/usuario', (req, res) => {
-  res.json("post usuario");
-})
+app.use(require('./routes/users'));
 
-app.put('/usuario/:id', (req, res) => {
+mongoose.connect(process.env.URLDB,
+  { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true },
+  (err, res) => {
 
-  let id = req.params.id
-  res.json("put usuario " + id);
-})
+    if (err) throw err;
 
-app.delete('/usuario', (req, res) => {
-  res.json("delete usuario");
-})
+    console.log('Base de datos online')
 
+});
 
 app.listen(process.env.PORT, () => {
   console.log(`Runing in ${process.env.PORT}`)
