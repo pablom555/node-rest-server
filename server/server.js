@@ -14,7 +14,8 @@ app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use(require('./routes/users'));
+// Configuracion de rutas globales
+app.use(require('./routes/index'));
 
 mongoose.connect(process.env.URLDB,
   { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true },

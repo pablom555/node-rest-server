@@ -4,9 +4,11 @@ const _ = require('underscore');
 
 const User = require('./../models/user');
 
+const { verifyToken, verifyAdminRole } = require('./../middlewares/authentication');
+
 const app = express();
 
-app.get('/user', (req, res) => {
+app.get('/user', verifyToken, (req, res) => {
 
     let from = req.query.from || 0;
     from = Number(from)
@@ -22,14 +24,14 @@ app.get('/user', (req, res) => {
         .limit(limit)
         .exec((err, usersDB) => {
 
-            if (err) {
-                return res.status(400).json({
+            if ( err ) {
+                return res.status(500).json({
                     ok: false,
                     err
                 })
             }
 
-            User.countDocuments((userActives), (err, count) => {
+            User.countDocuments( (userActives), (err, count) => {
                
                 res.json({
                     ok: true,
@@ -42,7 +44,7 @@ app.get('/user', (req, res) => {
         })
 })
 
-app.post('/user', (req, res) => {
+app.post('/user', [verifyToken, verifyAdminRole], (req, res) => {
 
     let body = req.body;
 
@@ -55,8 +57,8 @@ app.post('/user', (req, res) => {
 
     user.save((err, userDB) => {
 
-        if (err) {
-            return res.status(400).json({
+        if ( err ) {
+            return res.status(500).json({
                 ok: false,
                 err
             })
@@ -71,7 +73,7 @@ app.post('/user', (req, res) => {
 
 });
 
-app.put('/user/:id', (req, res) => {
+app.put('/user/:id', [verifyToken, verifyAdminRole], (req, res) => {
 
     let id = req.params.id
 
@@ -80,15 +82,15 @@ app.put('/user/:id', (req, res) => {
 
     User.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, userDB) => {
 
-        if (err) {
-            return res.status(400).json({
+        if ( err ) {
+            return res.status(500).json({
                 ok: false,
                 err
             })
         }
 
-        if (!userDB) {
-            return res.status(400).json({
+        if ( !userDB ) {
+            return res.status(404).json({
                 ok: false,
                 err: {
                     message: 'User Not found'
@@ -105,22 +107,22 @@ app.put('/user/:id', (req, res) => {
 
 })
 
-app.delete('/user/:id', (req, res) => {
+app.delete('/user/:id', [verifyToken, verifyAdminRole], (req, res) => {
     
     let id = req.params.id;
     body = {state: false};
 
     User.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, userDB) => {
 
-        if (err) {
-            return res.status(400).json({
+        if ( err ) {
+            return res.status(500).json({
                 ok: false,
                 err
             })
         }
 
-        if (!userDB) {
-            return res.status(400).json({
+        if ( !userDB ) {
+            return res.status(404).json({
                 ok: false,
                 err: {
                     message: 'User Not found'
