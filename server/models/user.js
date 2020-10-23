@@ -42,7 +42,7 @@ let userSchema = new Schema({
 
 })
 
-//Sobreescribe metodo toJASON para eliminar el password 
+//Sobreescribe metodo toJSON para eliminar el password 
 // del user creado
 userSchema.methods.toJSON = function () {
 
