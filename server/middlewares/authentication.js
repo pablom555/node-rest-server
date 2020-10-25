@@ -23,6 +23,29 @@ const verifyToken = ( req, res, next ) => {
     
 }
 
+const verifyTokenbyURL = (req, res, next) => {
+
+    const token = req.query.token;
+
+    jwt.verify(token, process.env.SEED, (err, decoded) => {
+
+        if (err) {
+            return res.status(401).json({
+                ok: false,
+                err: {
+                    message: "Token must be provided"
+                }
+            });
+        }
+
+        req.user = decoded.user;
+
+        next();
+
+    })
+
+}
+
 const verifyAdminRole = (req, res, next ) => {
 
     const { role } = req.user;
@@ -42,5 +65,6 @@ const verifyAdminRole = (req, res, next ) => {
 
 module.exports = {
     verifyToken,
-    verifyAdminRole
+    verifyAdminRole,
+    verifyTokenbyURL
 }
